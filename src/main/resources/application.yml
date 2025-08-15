@@ -1,0 +1,41 @@
+server:
+  port: 8088
+
+spring:
+  application:
+    name: habilisadi-gateway
+  cloud:
+    loadbalancer:
+      retry:
+        enabled: true
+    gateway:
+      server:
+        webflux:
+          routes:
+#            - id: public_api
+#              uri: lb://PUBLIC-SERVICE
+#              predicates:
+#                - Path=/public/**
+#              filters:
+#                - RewritePath=/public/(?<segment>.*), /${segment}
+#                - name: CustomGateway
+#                  args:
+#                    args-test: true
+#                - name: Retry
+#                  args:
+#                    retries: 3
+#                    statuses: BAD_GATEWAY,INTERNAL_SERVER_ERROR
+#                - name: CircuitBreaker
+#                  args:
+#                    name: public-service-cb
+#                    fallbackUri: forward:/fallback
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost}:${EUREKA_PORT:8090}/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: false
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
