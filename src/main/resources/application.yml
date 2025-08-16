@@ -12,6 +12,11 @@ spring:
       server:
         webflux:
           routes:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://${AUTH_SERVER_URL:localhost}:8080
 
 eureka:
   client:
