@@ -15,12 +15,7 @@ class CorsConfig {
         val source = CorsConfigurationSource { request: ServerWebExchange? ->
             val corsConfiguration = CorsConfiguration()
             corsConfiguration.allowedOrigins =
-                listOf(
-                    "http://localhost:3000",
-                    "https://localhost:3000",
-                    "http://localhost:8080",
-                    "https://localhost:8080"
-                )
+                listOf("*")
             corsConfiguration.allowedMethods =
                 listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
             corsConfiguration.allowedHeaders = listOf("Authorization", "Content-Type")

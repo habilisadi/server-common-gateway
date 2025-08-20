@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: habilisadi_gateway
+    name: gateway
   cloud:
     loadbalancer:
       retry:
@@ -12,6 +12,53 @@ spring:
       server:
         webflux:
           routes:
+            - id: auth_public_api
+              uri: lb://auth
+              predicates:
+                - Path=/api/v1/auth/public/**
+                - Method=GET,POST,PUT
+              filters:
+                - name: RewritePath
+                  args:
+                    regexp: /api/v1/auth/public/(?<segment>.*)
+                    replacement: /api/v1/public/${segment}
+                - name: CircuitBreaker
+                  args:
+                    name: public-service-cb
+                    fallbackUri: forward:/fallback
+                - name: Retry
+                  args:
+                    retries: 3
+                    statuses: BAD_GATEWAY,INTERNAL_SERVER_ERROR
+              metadata:
+                priority: 1
+                auth-required: false
+                security-enabled: false
+                remove-auth-headers: true
+                public-access: true
+
+            - id: auth_private_api
+              uri: lb://auth
+              predicates:
+                - Path=/api/v1/auth/private/**
+                - Method=GET,POST,PUT,DELETE
+              filters:
+                - name: RewritePath
+                  args:
+                    regexp: /api/v1/(?<service>[^/]+)/private/(?<segment>.*)
+                    replacement: /api/v1/private/${segment}
+                - name: CircuitBreaker
+                  args:
+                    name: public-service-cb
+                    fallbackUri: forward:/fallback
+                - name: Retry
+                  args:
+                    retries: 3
+                    statuses: BAD_GATEWAY,INTERNAL_SERVER_ERROR
+              metadata:
+                priority: 2
+
+  
   security:
     oauth2:
       resourceserver:
